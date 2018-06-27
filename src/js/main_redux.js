@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Redux,createStore} from 'redux';
+import {createStore} from 'redux';
 
 class ClearBoard extends React.Component{
   constructor(props){
@@ -73,6 +73,7 @@ class Board extends React.Component{
 
   //更新框框內標記
   updateMark(index){
+    //利用dispatch方法進入redux物件中的reducer,觸發action方法
     redux.store.dispatch({
       type:'UpdateMark',
       index:index
@@ -81,6 +82,7 @@ class Board extends React.Component{
   
   //建立Redux連結
   refresh(){
+    //將Redux的狀態物件傳給React的更新組件,觸發畫面更新
     this.setState(redux.store.getState());
   }
 
@@ -92,7 +94,7 @@ class Board extends React.Component{
   }
 }
 
-//Redux程式
+//Redux程式 宣告全域變數物件
 let redux = {
   store: null,
   reducer: function(state, action) {
@@ -104,7 +106,6 @@ let redux = {
           才觸發變更事件
         */
         if(currentMark === -1 && state.winner === null){
-          this.setState((state) =>{
             let mark = state.circle%2; //根據回合數決定標記, 0畫圈, 1畫叉
             state.marks[action.index] = mark; //將標記回傳到狀態marks陣列中
             //標記更新後將標記陣列傳給checkWinner方法確認是否有贏家
@@ -114,14 +115,13 @@ let redux = {
               marks:state.marks,
               winner: isWinner
             };
-          });
         }else{
           //不符合更新條件,不更新狀態回傳原始狀態
           return state;
         }
     
       default:
-        return;
+        return state;
     }
   },
   //檢查是否有贏家出現
